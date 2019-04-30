@@ -26,7 +26,7 @@ public class MovieController
         InputStream input = new FileInputStream("config.properties");
         properties.load(input);
     }
-    public List<Movie> searchForSimilarMovies(String movieTitle) throws IOException
+    public List<Movie> searchForSimilarMovies(String movieTitle)
     {
         List<Movie> movies = null;
         String imdbId = searchInOMDB(movieTitle);
@@ -36,56 +36,86 @@ public class MovieController
             if(movieDBId != null)
             {
                 movies = getSimilarMovies(movieDBId);
-                movies.stream()
-                        .forEach(x -> System.out.println(x.getOriginalTitle()));
+//                movies.stream().forEach(x -> System.out.println(x.getOriginalTitle()));
             }
         }
         return movies;
     }
 
-    public String searchInOMDB(String movieTitle) throws IOException
+    public String searchInOMDB(String movieTitle)
     {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(properties.getProperty("OMDBUrl"))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        OMDBService service = retrofit.create(OMDBService.class);
-        String omdbKey = properties.getProperty("OMDBKey");
-        Call<OMDBMovie> call = service.searchForMovie(omdbKey, movieTitle);
-        Response<OMDBMovie> response = call.execute();
-        String imdbId = response.body().getImdbID();
+        String imdbId = null;
+        try
+        {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(properties.getProperty("OMDBUrl"))
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            OMDBService service = retrofit.create(OMDBService.class);
+            String omdbKey = properties.getProperty("OMDBKey");
+            Call<OMDBMovie> call = service.searchForMovie(omdbKey, movieTitle);
+            Response<OMDBMovie> response = call.execute();
+            imdbId = response.body().getImdbID();
+            System.out.println("ImdbId is " + imdbId);
+        }
+        catch(IOException exc)
+        {
+            //TODO implement error logging
+        }
         return imdbId;
     }
 
-    public String searchByIMDBId(String imdbId) throws IOException {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(properties.getProperty("MovieDBUrl"))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MovieDBService service = retrofit.create(MovieDBService.class);
-        String movieDBKey = properties.getProperty("MovieDBKey");
-        Call<MovieList> call = service.searchForMovieByExternalId(imdbId, movieDBKey, "imdb_id");
-        Response<MovieList> response = call.execute();
+    public String searchByIMDBId(String imdbId)
+    {
         String movieDBId = null;
-        if(response.body() != null)
+        try
         {
-            List<Movie> movies = response.body().movie_results;
-            movieDBId = movies.get(0).getId();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(properties.getProperty("MovieDBUrl"))
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            MovieDBService service = retrofit.create(MovieDBService.class);
+            String movieDBKey = properties.getProperty("MovieDBKey");
+            Call<MovieList> call = service.searchForMovieByExternalId(imdbId, movieDBKey, "imdb_id");
+            Response<MovieList> response = call.execute();
+            if (response.body() != null) {
+                List<Movie> movies = response.body().movie_results;
+                if(movies.size() > 0)
+                {
+                    movieDBId = movies.get(0).getId();
+                }
+            }
+            System.out.println("movieDBId is " + movieDBId);
+        }
+        catch (IOException exc)
+        {
+            //TODO implement error logging
         }
         return movieDBId;
     }
 
 
-    public List<Movie> getSimilarMovies(String movieDBId) throws IOException {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(properties.getProperty("MovieDBUrl"))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MovieDBService service = retrofit.create(MovieDBService.class);
-        String movieDBKey = properties.getProperty("MovieDBKey");
-        Call<Movies> call = service.searchForSimilarMovies(movieDBId, movieDBKey);
-        Response<Movies> response = call.execute();
-        List<Movie> movies = response.body().results;
+    public List<Movie> getSimilarMovies(String movieDBId)
+    {
+        List<Movie> movies = null;
+        try
+        {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(properties.getProperty("MovieDBUrl"))
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            MovieDBService service = retrofit.create(MovieDBService.class);
+            String movieDBKey = properties.getProperty("MovieDBKey");
+            Call<Movies> call = service.searchForSimilarMovies(movieDBId, movieDBKey);
+            Response<Movies> response = call.execute();
+            movies = response.body().results;
+            System.out.println("movies are: ");
+            movies.stream().forEach(x -> System.out.println(x.getOriginalTitle()));
+        }
+        catch(IOException exc)
+        {
+            //TODO implement error logging
+        }
         return movies;
     }
 }

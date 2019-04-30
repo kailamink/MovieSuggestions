@@ -1,6 +1,5 @@
 package Controller;
 
-import Model.Movie;
 import Model.MovieList;
 import Model.Movies;
 import retrofit2.Call;

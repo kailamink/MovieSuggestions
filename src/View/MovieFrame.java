@@ -1,11 +1,14 @@
 package View;
 
+import Controller.MovieController;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class MovieFrame extends JFrame
 {
-    public MovieFrame()
+    public MovieFrame(MovieController movieController)
     {
         setTitle("Movie Suggestions");
         setSize(600,600);
@@ -18,8 +21,7 @@ public class MovieFrame extends JFrame
         root.add(movie, BorderLayout.CENTER);
 
         InputFrame inputy = new InputFrame();
-        root.add(inputy.createControlPanel(movie), BorderLayout.NORTH);
+        root.add(inputy.createControlPanel(movieController, movie), BorderLayout.NORTH);
         setContentPane(root);
-
     }
 }
