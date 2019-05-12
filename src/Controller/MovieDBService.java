@@ -15,8 +15,8 @@ public interface MovieDBService
                                             , @Query("external_source") String externalSource);
 
 
-    @GET("/3/movie/{movie_id}/similar")
-    Call<Movies> searchForSimilarMovies(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
+    @GET("/3/movie/{movie_id}/recommendations")
+    Call<Movies> searchForRecommendations(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
 
 
 }

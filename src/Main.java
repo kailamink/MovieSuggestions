@@ -5,9 +5,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String [] args) throws IOException {
-        MovieController controller = new MovieController();
-//        controller.searchForSimilarMovies("anastasia");
-        MovieFrame movieFrame = new MovieFrame(controller);
+        MovieFrame movieFrame = new MovieFrame(new MovieController());
         movieFrame.setVisible(true);
     }
 }

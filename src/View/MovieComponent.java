@@ -30,18 +30,16 @@ public class MovieComponent extends JComponent
         else if(_tries > 0)
         {
             graphics.setColor(Color.BLACK);
-            graphics.drawString(new String("No wifi"),10,10);
+            graphics.drawString(new String("404 -- Movie Not Found"),10,10);
         }
         _graphics = graphics.create();
+
     }
 
     public void displayMovieTitle(MovieController movieController, String movieTitle)
     {
         ++_tries;
-        if(_movies != null)
-        {
-            _movies.clear();
-        }
+        _movies = _movies == null ? _movies : null;
         _movies =  movieController.searchForSimilarMovies(movieTitle);
         paintComponent(_graphics);
     }
